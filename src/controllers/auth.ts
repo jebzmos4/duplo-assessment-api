@@ -18,54 +18,55 @@ import { ResponseWrapper } from '../helpers/response_wrapper';
 import { AuthUserRequest } from '../typings/interface';
 
 export class AuthController {
-  public static async login(
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ): Promise<Response> {
-    const { email, password } = req.body;
-    const result = await UserService.login(email, password);
-    const response: ResponseWrapper = new ResponseWrapper(res);
 
-    if (result.status) {
-      events.emit('user_logins', result.data, req.ip, req.headers.host);
-      return response.ok(result);
-    }
+  // public static async login(
+  //   req: Request,
+  //   res: Response,
+  //   _next: NextFunction
+  // ): Promise<Response> {
+  //   const { email, password } = req.body;
+  //   const result = await UserService.login(email, password);
+  //   const response: ResponseWrapper = new ResponseWrapper(res);
 
-    events.emit('login_attempt', req.ip, req.headers.host);
-    return response.unprocessableEntity(result);
-  }
+  //   if (result.status) {
+  //     events.emit('user_logins', result.data, req.ip, req.headers.host);
+  //     return response.ok(result);
+  //   }
 
-  public static async forgotPassword(
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ): Promise<Response> {
-    const { email } = req.body;
-    const response: ResponseWrapper = new ResponseWrapper(res);
+  //   events.emit('login_attempt', req.ip, req.headers.host);
+  //   return response.unprocessableEntity(result);
+  // }
 
-    return response.ok(await UserService.forgotPassword(email));
-  }
+  // public static async forgotPassword(
+  //   req: Request,
+  //   res: Response,
+  //   _next: NextFunction
+  // ): Promise<Response> {
+  //   const { email } = req.body;
+  //   const response: ResponseWrapper = new ResponseWrapper(res);
 
-  public static async changePassword(
-    req: AuthUserRequest,
-    res: Response,
-    _next: NextFunction
-  ): Promise<Response> {
-    const objSysAdmin = req.user;
-    const { oldPassword, newPassword } = req.body;
+  //   return response.ok(await UserService.forgotPassword(email));
+  // }
 
-    const userService: UserService = new UserService(objSysAdmin);
-    const response: ResponseWrapper = new ResponseWrapper(res);
+  // public static async changePassword(
+  //   req: Request,
+  //   res: Response,
+  //   _next: NextFunction
+  // ): Promise<Response> {
+  //   const objSysAdmin = req.user;
+  //   const { oldPassword, newPassword } = req.body;
 
-    return response.ok(
-      await userService.changePassword(
-        objSysAdmin.email,
-        oldPassword,
-        newPassword
-      )
-    );
-  }
+  //   const userService: UserService = new UserService(objSysAdmin);
+  //   const response: ResponseWrapper = new ResponseWrapper(res);
+
+  //   return response.ok(
+  //     await userService.changePassword(
+  //       objSysAdmin.email,
+  //       oldPassword,
+  //       newPassword
+  //     )
+  //   );
+  // }
 
   public static async register(
     req: Request,
@@ -74,5 +75,14 @@ export class AuthController {
   ): Promise<Response> {
     const response: ResponseWrapper = new ResponseWrapper(res);
     return response.created(await UserService.register(req.body));
+  }
+
+  public static async verifyEmail(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response> {
+    const response: ResponseWrapper = new ResponseWrapper(res);
+    return response.created(await UserService.verifyEmail(req.body));
   }
 }

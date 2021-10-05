@@ -19,7 +19,6 @@ import routes from '../routes';
 import CORS from '../providers/cors';
 import * as config from '../config';
 import { notFoundHandler } from '../helpers';
-import * as ver from '../providers/version';
 import { logger, initRequest, logResponse } from '../providers/logger';
 import SwaggerInit from '../swagger/init'; // Update impact_api.yaml
 
@@ -34,14 +33,6 @@ const main = (app: any, express: any): Promise<any> => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json({ limit: '1.5MB' }));
     app.use(CORS.handle);
-
-    // Set versions info
-    app.set('apiVersion', ver.apiVersion.version);
-    app.set('apiCommit', ver.apiVersion.commitshort);
-    app.set('apiVerMajor', ver.apiVersion.apiVerMajor);
-    app.set('apiVerMinor', ver.apiVersion.apiVerMinor);
-    app.set('apiVerPatch', ver.apiVersion.apiVerPatch);
-    app.set('apiVerBuild', ver.apiVersion.apiVerBuild);
 
     // set token experiation and secret
     app.set('tokenSecret', config.server.apiUuid); // secret variable used for Jwt encoding

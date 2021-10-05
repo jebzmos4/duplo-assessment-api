@@ -15,7 +15,7 @@ const router = express.Router();
 
 /**
  * @openapi
- * /v0/app/version:
+ * /v1/app/:
  *  get:
  *    tags:
  *    - App
@@ -33,6 +33,6 @@ const router = express.Router();
  *                data:
  *                  $ref: '#/components/schemas/version'
  */
-router.get('/version', wrapper(AppController.version));
+router.get('/', wrapper(AppController.base));
 
 export default router;

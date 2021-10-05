@@ -7,18 +7,6 @@ import {
   UpdateDateColumn
 } from 'typeorm';
 
-export enum UserRole {
-  ADMIN = 'admin',
-  AGENT = 'agent',
-  USER = 'user'
-}
-
-export enum SignupType {
-  FACEBOOK = 'facebook',
-  GOOGLE = 'google',
-  EMAIL = 'email'
-}
-
 @Entity()
 export class User {
   @PrimaryColumn()
@@ -29,19 +17,13 @@ export class User {
     type: 'varchar',
     length: 255
   })
-  firstName!: string;
+  first_name!: string;
 
   @Column({
     type: 'varchar',
     length: 255
   })
-  middleName!: string;
-
-  @Column({
-    type: 'varchar',
-    length: 255
-  })
-  lastName!: string;
+  last_name!: string;
 
   @Column({
     type: 'varchar',
@@ -57,27 +39,8 @@ export class User {
   @Column()
   dob!: string;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.USER
-  })
-  role!: UserRole;
-
-  @Column({
-    type: 'enum',
-    enum: SignupType,
-    default: SignupType.EMAIL
-  })
-  loggedWith!: SignupType;
-
-  @Column({
-    type: 'varchar',
-    length: 15,
-    unique: true,
-    nullable: true
-  })
-  phoneNumber!: string;
+  @Column()
+  gender!: string;
 
   @Column({
     type: 'varchar',
@@ -92,7 +55,10 @@ export class User {
   })
   isActive!: boolean;
 
-  @Column()
+  @Column({
+    type: 'date',
+    default: new Date()
+  })
   lastSeen!: Date;
 
   @CreateDateColumn()

@@ -33,8 +33,8 @@ interface dbClient {
  */
 export const dbObj: dbClient = {
   username: process.env.DATABASE_USER || 'postgres',
-  password: process.env.DATABASE_PASSWORD || 'poweruser@12345',
-  database: process.env.DATABASE_NAME || 'postgres',
+  password: process.env.DATABASE_PASSWORD || 'jebzmos4',
+  database: process.env.DATABASE_NAME || 'duplo',
   type: process.env.DATABASE_DIALECT || 'postgres',
   host: process.env.DATABASE_HOST || 'localhost',
   port: Number(process.env.DATABASE_PORT) || 5432,

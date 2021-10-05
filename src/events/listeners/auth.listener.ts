@@ -26,7 +26,7 @@ export class AuthListener extends CommonService {
     const service = new EmailService();
   }
 
-  public async register(email: string, firstName: string) {
+  public async register(email: string, token: string) {
     const service = new EmailService();
   }
 

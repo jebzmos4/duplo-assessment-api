@@ -2,7 +2,7 @@
 import { Response } from 'express';
 
 interface responseObject {
-  status: boolean;
+  status: string;
   data?: object;
   message: string;
   code?: number;

@@ -9,14 +9,26 @@
 import * as Joi from 'joi';
 
 class AuthValidator {
-  public login() {
+  public register() {
     return Joi.object({
+      first_name: Joi.string().required(),
+      last_name: Joi.string().required(),
       email: Joi.string().required(),
+      username: Joi.string().required(),
+      dob: Joi.string().required(),
+      gender: Joi.string().required(),
       password: Joi.string().required()
     });
   }
 
-  public addAdmin() {
+  public verify() {
+    return Joi.object({
+      email: Joi.string().required(),
+      token: Joi.string().required()
+    });
+  }
+
+  public login(req: any) {
     return Joi.object({
       email: Joi.string().required(),
       password: Joi.string().required()
