@@ -1,0 +1,5 @@
+{"level":"info","message":"🌴 Database connection was successful!"}
+{"level":"error","message":"main(): Swagger error","stack":{"code":"ENOENT","errno":-2,"path":"./swagger/backend_api.yaml","syscall":"open"}}
+{"level":"info","message":"🚀 Server started successfully, running on port: 9000."}
+{"level":"info","message":"Server :: Running @ 'http://localhost:9000'"}
+{"level":"info","message":"Swagger :: Running @ 'http://localhost:9000/swagger'"}
