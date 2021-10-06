@@ -83,7 +83,7 @@ export const bcrypt = {
  */
 export const email = {
   primary: {
-    token: process.env.SENDGRID_API_KEY || '',
+    token: process.env.SENDGRID_API_KEY || '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',
     from: 'support@geekyants.com'
   },
 
@@ -107,5 +107,5 @@ export const logs = {
   maxFiles: 5,
   maxFileSize: 20971520, // 20 MB
   zipOldLogs: true,
-  fileName: 'akomod8_backend'
+  fileName: 'duplo_backend'
 };

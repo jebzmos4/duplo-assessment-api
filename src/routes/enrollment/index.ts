@@ -4,40 +4,38 @@
  * @application 016-n-3020_impact_api
  *     @summary Authentication routes
  * @description Handles following routes:
- *              - POST '/login'
- *              - POST '/signup'
- *              - POST '/verify-email'
+ *              - GET '/list'
+ *              - DELETE '/delete'
+ *              - POST '/crete'
  */
 import express from 'express';
 import { wrapper } from '../../helpers';
 import Schema from '../../middlewares/schema';
 import AuthValidator from '../../validators/auth';
-import { AuthController } from '../../controllers';
-
+import { EnrollmentController } from '../../controllers';
+import CheckAuth from '../../middlewares/auth';
 const router = express.Router();
 
-router.post(
-  '/signup',
+router.get(
+  '/list',
   (req: any, res: any, next: any) => {
-    Schema.handle(req, res, next, AuthValidator.register());
-  },
-  wrapper(AuthController.register)
+    CheckAuth.check(req, res, next, '');  },
+  wrapper(EnrollmentController.list)
 );
 
 router.post(
-  '/verify-email',
+  '/create',
   (req: any, res: any, next: any) => {
-    Schema.handle(req, res, next, AuthValidator.verify());
+    CheckAuth.check(req, res, next, '');
   },
-  wrapper(AuthController.verifyEmail)
+  wrapper(EnrollmentController.create)
 );
 
-router.post(
-  '/login',
+router.delete(
+  '/delete',
   (req, res, next) => {
-    Schema.handle(req, res, next, AuthValidator.login());
-  },
-  wrapper(AuthController.login)
+    CheckAuth.check(req, res, next, '');  },
+  wrapper(EnrollmentController.delete)
 );
 
 export default router;

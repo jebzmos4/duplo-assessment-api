@@ -28,7 +28,7 @@ class AuthValidator {
     });
   }
 
-  public login(req: any) {
+  public login() {
     return Joi.object({
       email: Joi.string().required(),
       password: Joi.string().required()

@@ -26,6 +26,11 @@ import { User } from '../entities/User';
 import { CommonService } from '../services';
 import { logger } from '../providers/logger';
 
+interface verifyEmail {
+  token: string;
+  email: string;
+}
+
 export class UserService extends CommonService {
   expReq?: any;
 
@@ -64,60 +69,76 @@ export class UserService extends CommonService {
     };
   }
 
-  // public static verifyToken(bearer: string): Promise<TokenBody> {
-  //   try {
-  //     const token = jwt.verify(bearer, config.server.apiUuid);
-  //     return Promise.resolve({ success: true, token });
-  //   } catch (err) {
-  //     return Promise.reject({ success: false, error: err });
-  //   }
-  // }
+  static async generateOTP() {
+    return Array(6 || 30)
+      .fill("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+      .map((x) => x[Math.floor(Math.random() * x.length)])
+      .join("");
+  }
+
+  public static verifyToken(bearer: string): Promise<any> {
+    try {
+      const token = jwt.verify(bearer, config.server.apiUuid);
+      return Promise.resolve({ success: true, token });
+    } catch (err) {
+      return Promise.reject({ success: false, error: err });
+    }
+  }
 
   public static async register(body: any): Promise<any> {
     try {
       const userRepository = getRepository(User);
+      const salt = bcrypt.genSaltSync(10);
+      body.password = bcrypt.hashSync(body.password, salt);
+      const token = await UserService.generateOTP();
+      body.token = token
       const user = await userRepository.save(body);
 
-      const token = await UserService.createToken(user);
       events.emit('register', body.email, token);
       user.password = '';
       return {
         status: 'SUCCESS',
         message: `Verification token has been sent to ${body.email}.`,
         data: {
-          ...user,
-          ...token
+          ...user
         }
       };
     } catch (error) {
-      console.log(error)
       return {
-        status: false,
-        message: error,
+        status: 'FAILED',
+        message: 'Registration Failed',
         data: {}
       };
     }
   }
 
-  public static async verifyEmail(body: any): Promise<any> {
+  public static async verifyEmail(body: verifyEmail): Promise<any> {
     try {
       const userRepository = getRepository(User);
-      const user = await userRepository.save(body);
+      let user = await userRepository.findOne({ email: body.email })
+      if (!user) {
+        return {
+          status: false,
+          message: 'No user with this email',
+          data: {}
+        };
+      } else if (user.token != body.token) {
+        return {
+          status: false,
+          message: 'Invalid Token',
+          data: {}
+        };
+      }
+      user.emaillVerified = true;
       await userRepository.save(user);
-
-      const token = await UserService.createToken(user);
-      events.emit('register', body.email, token);
-      user.password = '';
       return {
         status: 'SUCCESS',
-        message: `Verification token has been sent to ${body.email}.`,
+        message: 'Registration succesfull.',
         data: {
-          ...user,
-          ...token
+          ...user
         }
       };
     } catch (error) {
-      console.log(error)
       return {
         status: false,
         message: error,
@@ -126,145 +147,58 @@ export class UserService extends CommonService {
     }
   }
 
-  // // login using username AND password AND get user details AND auth token
-  // public static async login(email: string, password: string) {
-  //   return this.getUserAndAuthToken(email, password);
-  // }
+  // login using username AND password AND get user details AND auth token
+  public static async login(email: string, password: string) {
+    return this.getUserAndAuthToken(email, password);
+  }
 
   // // Gets user details AND auth token
-  // public static async getUserAndAuthToken(email: string, password: string) {
-  //   try {
-  //     const userRepository = getRepository(User);
-  //     const user = await userRepository.findOne({ email, isActive: true });
-  //     if (!user) {
-  //       return {
-  //         status: false,
-  //         message: messages.errors.user.login,
-  //         data: {}
-  //       };
-  //     }
+  public static async getUserAndAuthToken(email: string, password: string) {
+    try {
+      const userRepository = getRepository(User);
+      const user = await userRepository.findOne({ email, emaillVerified: true });
+      if (!user) {
+        return {
+          status: 'FAILURE',
+          message: 'invalid credentials',
+          data: {}
+        };
+      }
 
-  //     if (!bcrypt.compareSync(password, user.password)) {
-  //       return {
-  //         status: false,
-  //         message: messages.errors.user.login,
-  //         data: {}
-  //       };
-  //     }
-  //     const token = await UserService.createToken(user);
-  //     user.password = '';
-  //     return {
-  //       status: true,
-  //       message: messages.success.user.login,
-  //       data: {
-  //         ...user,
-  //         ...token
-  //       }
-  //     };
-  //   } catch (error) {
-  //     logger.error({
-  //       message: `UserService.addUser() Error`,
-  //       stack: error
-  //     });
-  //     return {
-  //       status: false,
-  //       message: messages.errors.user.login,
-  //       data: {}
-  //     };
-  //   }
-  // }
-
-  // /**
-  //  * @author forgot password
-  //  * @param email
-  //  * @returns interface {forgotPassword}
-  //  */
-  // public static async forgotPassword(email: string): Promise<forgotPassword> {
-  //   const response = {
-  //     status: true,
-  //     message: messages.success.user.passwordReset,
-  //     data: {}
-  //   };
-  //   try {
-  //     const userRepository = getRepository(User);
-  //     const user = await userRepository.findOne({ email, isActive: true });
-  //     if (!user) {
-  //       return response;
-  //     }
-  //     // Emitting event that "forgot password" has ran statusfully
-  //     events.emit('forgot_password', email, email);
-  //     return response;
-  //   } catch (error) {
-  //     return {
-  //       status: false,
-  //       data: {},
-  //       message: messages.errors.user.login
-  //     };
-  //   }
-  // }
-
-  // /**
-  //  * @author Changes password for given user after verifying old password is matching current password
-  //  * @param email
-  //  * @param oldPassword
-  //  * @param newPassword
-  //  * @returns
-  //  */
-  // public async changePassword(
-  //   email: string,
-  //   oldPassword: string,
-  //   newPassword: string
-  // ): Promise<changePassword> {
-  //   try {
-  //     const userRepository = getRepository(User);
-  //     const user = await userRepository.findOne({ email, isActive: true });
-  //     if (!user) {
-  //       return {
-  //         status: true,
-  //         message: messages.errors.user.password,
-  //         data: {}
-  //       };
-  //     }
-
-  //     if (!bcrypt.compareSync(oldPassword, user.password)) {
-  //       return {
-  //         status: true,
-  //         message: messages.errors.user.password,
-  //         data: {}
-  //       };
-  //     }
-
-  //     const salt = bcrypt.genSaltSync(this.salt);
-  //     user.password = bcrypt.hashSync(newPassword, salt);
-  //     await userRepository.save(user);
-  //     // Emitting event that "forgot password" has ran statusfully
-  //     events.emit('change_password', email);
-  //     return {
-  //       status: true,
-  //       message: messages.success.user.password,
-  //       data: {}
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       status: false,
-  //       message: messages.errors.user.login,
-  //       data: {}
-  //     };
-  //   }
-  // }
-
-  // public getDefaultUser(reset?: boolean) {
-  //   if (
-  //     reset ||
-  //     !this.user_current ||
-  //     !this.user_current.id ||
-  //     !this.user_current.email
-  //   ) {
-  //     this.user_current = new User();
-  //   }
-
-  //   return this.user_current;
-  // }
+      if (!bcrypt.compareSync(password, user.password)) {
+        return {
+          status: 'FAILURE',
+          message: 'Invalid Password',
+          data: {}
+        };
+      }
+      const token = await UserService.createToken(user);
+      user.password = '';
+      return {
+        status: 'SUCCESS',
+        message: 'Login Successful',
+        data: {
+          first_name: user.first_name,
+          last_name: user.last_name,
+          gender: user.gender,
+          age: user.dob,
+          email: user.email,
+          username: user.username,
+          token
+        }
+      };
+    } catch (error) {
+      logger.error({
+        message: `UserService.addUser() Error`,
+        stack: error
+      });
+      return {
+        status: 'FAILURE',
+        message: 'error occured while processing your request',
+        data: {}
+      };
+    }
+  }
 }
 
 export default UserService;

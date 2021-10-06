@@ -43,6 +43,17 @@ export class User {
   gender!: string;
 
   @Column({
+    nullable: false
+  })
+  token!: string
+
+  @Column({
+    nullable: false,
+    default: false
+  })
+  emaillVerified!: boolean
+
+  @Column({
     type: 'varchar',
     unique: true,
     nullable: true

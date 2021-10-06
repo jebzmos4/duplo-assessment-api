@@ -30,19 +30,20 @@ export class EmailService {
       sendgrid.setSubstitutionWrappers('{{', '}}');
     })();
   }
-  public async send(
+
+  public async sendText(
     to: string,
-    subject: string,
-    templateId: string,
-    substitutions: any
+    subject: string, 
+    token: string
   ) {
-    return sendgrid.send({
-      from: this.config.from,
+    const msg = {
       to,
+      from: 'test@example.com', // Use the email address or domain you verified above
       subject,
-      templateId,
-      substitutions
-    });
+      text: 'Please verify your email with this token',
+      html: `<strong>This is your token ${token}</strong>`,
+    };
+    return sendgrid.send(msg);
   }
 }
 

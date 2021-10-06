@@ -168,27 +168,6 @@ const consoleFormatter = (logEntry: LogEntry): LogEntry => {
  * @param {object} opts  Winston opts object
  * @returns {object} info | false - Mutated Winston info object or false
  **/
-// const filterTransport = winston.format((info, opts): any => {
-//   // Fetch the transport that information logging is currently targeting.
-//   // tslint:disable-next-line: no-use-before-declare
-//   const transport = logger.transports.find(
-//     (_transport: CustomWinstonTransport) => {
-//       return _transport.name === opts.target;
-//     }
-//   ) as CustomWinstonTransport;
-
-//   // Determine if the fetched transport was one of the intended targets when logging was invoked.
-//   const abort =
-//     Array.isArray(info.targets) &&
-//     !(
-//       info.targets.length === 0 ||
-//       info.targets.includes('all') ||
-//       info.targets.includes(transport.name)
-//     );
-
-//   // Abort filters (disables) logging on the current transport.
-//   return abort ? false : info;
-// });
 
 /**
  * Create and configure a Winston logger.

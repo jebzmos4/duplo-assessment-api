@@ -10,40 +10,19 @@
  */
 
 import { EventEmitter } from 'events';
-import AuthListener, { User } from './listeners/auth.listener';
-import LogListener from './listeners/log.listeners';
+import AuthListener from './listeners/auth.listener';
 
 class Event extends EventEmitter {}
 
 const events = new Event();
 const authListeners = new AuthListener({});
-const logListeners = new LogListener({});
 
 // Listen to whenever some one hits LogIn
 events.on(
-  'user_logins',
-  async (user: User, ip: string, hostname: string) => (
-    authListeners.userLogin(user, ip, hostname),
-    logListeners.saveAuditLog(ip, ip)
+  'register',
+  async (email: string, token: string) => (
+    authListeners.register(email, token)
   )
-);
-
-// Listen to success forgot password events
-events.on('forgot_password', async (email: string, firstName: string) =>
-  authListeners.forgotPassword(email, firstName)
-);
-
-// Listens to newly created user events
-events.on('new_user', async (email: string, firstName: string) =>
-  authListeners.register(email, firstName)
-);
-
-events.on('change_password', async (email: string, firstName: string) =>
-  authListeners.changePassword(email, firstName)
-);
-
-events.on('reset_password', async (email: string, firstName: string) =>
-  authListeners.resetPassword(email, firstName)
 );
 
 export default events;

@@ -6,10 +6,8 @@
  * @description Defines common functions that can be used across all services
  *   @functions - getRows()
  */
-import { getRepository } from 'typeorm';
 
 import { User } from '../entities/User';
-import { Log } from '../entities/Log';
 
 export class CommonService {
   public type_name!: string;
@@ -21,8 +19,6 @@ export class CommonService {
   constructor(_user: any) {
     this.user_current = _user;
   }
-
-   public async saveAuditLog(email: string, password: string) {}
 
 }
 

@@ -11,19 +11,23 @@
  *     @returns Express JSON Response
  */
 
-import { UserService } from '../services';
+import { EnrollmentService } from '../services';
 import { Response, Request, NextFunction } from 'express';
 import { ResponseWrapper } from '../helpers/response_wrapper';
+import { User as UserModel } from '../entities/User';
 
-export class AuthController {
+interface AuthUserRequest extends Request {
+    user: UserModel;
+}
 
-  public static async login(
-    req: Request,
+export class EnrollmentController {
+
+  public static async list(
+    req: AuthUserRequest,
     res: Response,
     _next: NextFunction
   ): Promise<Response> {
-    const { email, password } = req.body;
-    const result = await UserService.login(email, password);
+    const result = await EnrollmentService.list(req.user);
     const response: ResponseWrapper = new ResponseWrapper(res);
 
     if (result.status) {
@@ -32,21 +36,21 @@ export class AuthController {
     return response.unprocessableEntity(result);
   }
 
-  public static async register(
-    req: Request,
+  public static async create(
+    req: AuthUserRequest,
     res: Response,
     _next: NextFunction
   ): Promise<Response> {
     const response: ResponseWrapper = new ResponseWrapper(res);
-    return response.created(await UserService.register(req.body));
+    return response.created(await EnrollmentService.create(req.body, req.user));
   }
 
-  public static async verifyEmail(
-    req: Request,
+  public static async delete(
+    req: AuthUserRequest,
     res: Response,
     _next: NextFunction
   ): Promise<Response> {
     const response: ResponseWrapper = new ResponseWrapper(res);
-    return response.created(await UserService.verifyEmail(req.body));
+    return response.created(await EnrollmentService.delete(req.query, req.user));
   }
 }

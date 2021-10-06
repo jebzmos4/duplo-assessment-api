@@ -1,18 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { Connection, createConnection, getConnection } from 'typeorm';
+import { Connection, createConnection } from 'typeorm';
 import ORMConfig from '../../ormconfig';
 
 export const connect = (mediator: any) => {
   let connection: Connection | undefined;
 
   mediator.once('boot.ready', async () => {
-    // try {
-    //   connection = getConnection();
-    // } catch (e) {
-    //   console.log({ e });
-    //   mediator.emit('db.error', e);
-    // }
-
     try {
       if (connection) {
         if (!connection.isConnected) {
@@ -30,8 +23,4 @@ export const connect = (mediator: any) => {
 };
 
 export const disconnect = () => {
-  // if (!database) {
-  //   return;
-  // }
-  // mongoose.disconnect();
 };

@@ -27,7 +27,7 @@ export class CheckAuth {
 
     if (!token) {
       return response.forbidden({
-        success: false,
+        status: 'false',
         message: 'invalid authorization code',
         data: {}
       });
@@ -35,7 +35,7 @@ export class CheckAuth {
     const vToken = await UserService.verifyToken(token);
     if (!vToken.success) {
       return response.unauthorized({
-        success: false,
+        status: 'false',
         message: 'invalid authorization code',
         data: {}
       });
@@ -43,13 +43,13 @@ export class CheckAuth {
 
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({
-      id: vToken.token.sub,
-      isActive: true
+      id: vToken.token.body.sub,
+      emaillVerified: true
     });
     if (!user) {
       return response.unauthorized({
         message: 'invalid authorization code',
-        success: false,
+        status: 'false',
         data: {}
       });
     }
