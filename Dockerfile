@@ -2,7 +2,7 @@
 
 FROM node:8.11.3
 
-MAINTAINER Morifeoluwa Jebutu <jebzmos4@gmail.com>
+LABEL Morifeoluwa Jebutu <jebzmos4@gmail.com>
 
 # Copy source code
 COPY . /app
