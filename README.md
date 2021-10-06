@@ -5,8 +5,10 @@ This API is a sample Course Enrollment API.
 ----------
 Docker Image Link
 ----------
+https://hub.docker.com/repository/docker/moriagape/duplo-api
 
 You can pull with
+docker pull moriagape/duplo-api:latest
 
 Clone repository and run npm install to setup dependencies
 
