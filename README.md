@@ -32,7 +32,7 @@ SENDGRID_API_KEY='Sample API key in sample.env file'
 Get API running
 ----------------------------
 ```
-npm start
+npm start or run docker-compose up
 ```
 Check For Linting
 -------------
