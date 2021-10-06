@@ -1,20 +1,19 @@
-# Use node v10.8.0
+FROM node:14 AS builder
+# Create Directory for the Container
+WORKDIR /usr/src/app
+# Only copy the package.json file to work directory
+COPY package*.json ./
 
-FROM node:8.11.3
+COPY tsconfig*.json ./
 
-LABEL Morifeoluwa Jebutu <jebzmos4@gmail.com>
+COPY ./src ./src
 
-# Copy source code
-COPY . /app
-
-# Change working directory
-WORKDIR /app
-
-# Install dependencies
+# Install all Packages
 RUN npm install
-
-# Expose API port to the outside
-EXPOSE 4444
-
-# Launch application
-CMD ["npm","run", "start"]
+# Copy all other source code to work directory
+ADD . /usr/src/app
+# TypeScript
+RUN npm ci --quiet && npm run build
+# Start
+CMD [ "npm", "start" ]
+EXPOSE 7001
